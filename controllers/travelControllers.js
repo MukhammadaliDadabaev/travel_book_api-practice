@@ -8,7 +8,7 @@ const getAllTravels = async (req, res) => {
 
     res.status(200).json({
       message: "success",
-      travels,
+      travels: travels.reverse(),
     });
   } catch (error) {
     res.send(error);
@@ -58,12 +58,12 @@ const addTravelBook = async (req, res) => {
 // PUT update-travel-book by-ID
 const updateTravelBook = async (req, res) => {
   try {
-    const { title, image, descr } = req.body;
+    const { title, descr, image } = req.body;
 
     const updatedTravelBook = await Travel.findByIdAndUpdate(req.params.id, {
       title,
-      image,
       descr,
+      image,
     });
 
     res.status(200).json({

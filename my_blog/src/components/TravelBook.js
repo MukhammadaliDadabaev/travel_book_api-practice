@@ -1,106 +1,66 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const TravelBook = () => {
-  // DATE-API
-  const [post, setPost] = React.useState(null);
+  // STATE
+  const [travelBook, setTravelBook] = useState([]);
+  const [delById, setDelById] = useState("");
 
-  React.useEffect(() => {
-    axios.get("/api/travel").then((response) => {
-      setPost(response.data);
-      console.log(response.data);
-    });
+  // DATE-API
+  const fetchData = async () => {
+    const { data } = await axios.get("/api/travel");
+    setTravelBook(data.travels);
+  };
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  if (!post) return null;
+  // DELETE  BY_ID FUNC
+  const deleteHandler = async (e) => {
+    e.preventDefault();
+    await axios.delete(`/api/travel/${delById}`);
+    fetchData();
+  };
 
   return (
     <>
-      <div className="card my-3">
-        <img
-          src="https://ucarecdn.com/b76b9f96-4b10-41a9-8ab2-7bc0122dcebe/"
-          className="card-img-top"
-          alt="Booking"
-        />
-        <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
-          </p>
-          <p className="card-text">
-            <small className="text-muted">Last updated 3 mins ago</small>
-          </p>
+      {travelBook.map((travbook) => (
+        <div key={travbook._id} className="card my-3">
+          <img
+            src={travbook.image}
+            className="card-img-top"
+            alt={travbook.title}
+          />
+          <div className="card-body">
+            <h5 className="card-title">{travbook.title}</h5>
+            <p className="card-text">{travbook.descr}</p>
+            <p className="card-text">
+              <small className="text-muted">Last updated 3 mins ago</small>
+            </p>
+          </div>
+          <div className="mx-2">
+            <Link to="/add" className="btn btn-primary">
+              ADD
+            </Link>
+            <Link
+              to={`/update/${travbook._id}`}
+              className="btn btn-primary m-2"
+            >
+              UPDATE
+            </Link>
+            <form onSubmit={deleteHandler} className="d-inline">
+              <button
+                type="submit"
+                className="btn btn-danger"
+                onClick={() => setDelById(travbook._id)}
+              >
+                DELETE
+              </button>
+            </form>
+          </div>
         </div>
-        <div className="mx-2">
-          <Link to="/add" className="btn btn-primary">
-            ADD
-          </Link>
-          <Link to="/update/:id" className="btn btn-primary m-2">
-            UPDATE
-          </Link>
-          <Link to="/delete" className="btn btn-primary">
-            DELETE
-          </Link>
-        </div>
-      </div>
-      <div className="card my-3">
-        <img
-          src="https://rezdy.com//wp-content/uploads/2014/02/1_11zon-3.jpg"
-          className="card-img-top"
-          alt="Booking"
-        />
-        <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
-          </p>
-          <p className="card-text">
-            <small className="text-muted">Last updated 3 mins ago</small>
-          </p>
-        </div>
-        <div className="mx-2">
-          <Link to="/add" className="btn btn-primary">
-            ADD
-          </Link>
-          <Link to="/update/:id" className="btn btn-primary m-2">
-            UPDATE
-          </Link>
-          <Link to="/delete" className="btn btn-primary">
-            DELETE
-          </Link>
-        </div>
-      </div>
-      <div className="card my-3">
-        <img
-          src="https://www.barakah-webmaster.com/wp-content/uploads/2019/12/beispiel3.jpg"
-          className="card-img-top"
-          alt="Booking"
-        />
-        <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
-          </p>
-          <p className="card-text">
-            <small className="text-muted">Last updated 3 mins ago</small>
-          </p>
-        </div>
-        <div className="mx-2">
-          <Link to="/add" className="btn btn-primary">
-            ADD
-          </Link>
-          <Link to="/update/:id" className="btn btn-primary m-2">
-            UPDATE
-          </Link>
-          <Link to="/delete" className="btn btn-primary">
-            DELETE
-          </Link>
-        </div>
-      </div>
+      ))}
     </>
   );
 };
